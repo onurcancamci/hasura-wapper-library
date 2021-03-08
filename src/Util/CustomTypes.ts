@@ -38,3 +38,8 @@ export interface ICustomEnumType {
   values: IEnumValue[];
   description?: string;
 }
+
+export type ICustomType =
+  | ICustomEnumType
+  | ICustomInputType
+  | ICustomObjectType;

@@ -76,7 +76,7 @@ export class HasuraFunctions {
     });
   }
 
-  static async fregisterEventHook(hook: IEventHook, conn?: Connection) {
+  static async registerEventHook(hook: IEventHook, conn?: Connection) {
     let name: string;
     if (typeof hook.entity === "string") {
       name = hook.entity;
@@ -404,5 +404,30 @@ export class HasuraFunctions {
     await rb(!!perm.selectPerm, "select", perm.selectPerm);
     await rb(!!perm.updatePerm, "update", perm.updatePerm);
     await rb(!!perm.deletePerm, "delete", perm.deletePerm);
+  }
+
+  static async syncComputedField(cf: IComputedField, conn: Connection) {
+    const table =
+      typeof cf.entity === "string"
+        ? cf.entity
+        : conn.getMetadata(cf.entity).tableName;
+    return await this.fetchHasura("/v1/query", {
+      type: "add_computed_field",
+      args: {
+        table: {
+          name: table,
+          schema: "public",
+        },
+        name: this.name,
+        definition: {
+          function: {
+            name: cf.function_name,
+            schema: "public",
+          },
+          table_argument: cf.table_argument,
+          session_argument: cf.session_argument,
+        },
+      },
+    });
   }
 }
