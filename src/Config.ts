@@ -26,4 +26,8 @@ export interface IHasuraConfig {
   webhook: {
     url: string;
   };
+
+  auth: {
+    //
+  };
 }
